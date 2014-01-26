@@ -9,44 +9,55 @@
   (GET "/user/:id"
     [id]
     (let [id-key (keyword id)]
-      (if (contains? @data-store id-key)
-        (@data-store 
-          (keyword id))
-        (route/not-found
-          (str "User " id " was not found")))))
+      (if (= :all id-key)
+        (str @data-store)
+        (if (contains? @data-store id-key)
+          (@data-store 
+            id-key)
+          (route/not-found
+            (str "User " id " was not found"))))))
   (POST "/user/:id"
     [id]   
     (let [id-key (keyword id)]
-      (if (contains? @data-store id-key)
+      (if (= :all id-key)
         {:status 400
-         :body "User " id "already exists -- consider PUT"}
-        (do
-          ; (swap! data-store 
-          (send data-store
-            assoc (keyword id) id)
-          (str "User " id " was added")))))
+         :body "You can't be doing that"}
+        (if (contains? @data-store id-key)
+          {:status 400
+           :body "User " id "already exists -- consider PUT"}
+          (do
+            ; (swap! data-store 
+            (send data-store
+              assoc id-key id)
+            (str "User " id " was added"))))))
   (PUT "/user/:id/:newvalue"
     [id newvalue]
     (let [id-key (keyword id)]
-      (if (contains? @data-store id-key)
-        (do
-          ; (swap! data-store 
-          (send data-store
-            assoc (keyword id) newvalue)
-          (str "User " id " was updated"))
+      (if (= :all id-key)
         {:status 400
-         :body "User " id "does not exist -- consider POST"})))
+         :body "You can't be doing that"}
+        (if (contains? @data-store id-key)
+          (do
+            ; (swap! data-store 
+            (send data-store
+              assoc id-key newvalue)
+            (str "User " id " was updated"))
+          {:status 400
+           :body "User " id "does not exist -- consider POST"}))))
   (DELETE "/user/:id"
     [id]
     (let [id-key (keyword id)]
-      (if (contains? @data-store id-key)
-        (do
-          ; (swap! data-store 
-          (send data-store
-            dissoc (keyword id))
-          (str "User" id " was deleted"))
-        (route/not-found
-          (str "User " id " was not found")))))
+      (if (= :all id-key)
+        {:status 400
+         :body "You can't be doing that"}
+        (if (contains? @data-store id-key)
+          (do
+            ; (swap! data-store 
+            (send data-store
+              dissoc id-key)
+            (str "User" id " was deleted"))
+          (route/not-found
+            (str "User " id " was not found"))))))
   (route/resources "/")
   (route/not-found "Not Found"))
 
