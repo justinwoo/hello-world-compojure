@@ -1,13 +1,13 @@
 (ns hello-world.handler
   (:use [compojure.core]
-  			[hello-world.model])
+        [hello-world.model])
   (:require [compojure.handler :as handler]
             [compojure.route :as route]))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (GET "/user/:id"
-  	[id]
+    [id]
     (let [id-key (keyword id)]
       (if (contains? @data-store id-key)
         (@data-store 
@@ -15,7 +15,7 @@
         (route/not-found
           (str "User " id " was not found")))))
   (POST "/user/:id"
-  	[id]   
+    [id]   
     (let [id-key (keyword id)]
       (if (contains? @data-store id-key)
         {:status 400
@@ -25,8 +25,8 @@
             assoc (keyword id) id)
           (str "User " id " was added")))))
   (PUT "/user/:id/:newvalue"
-  	[id newvalue]
-  	(let [id-key (keyword id)]
+    [id newvalue]
+    (let [id-key (keyword id)]
       (if (contains? @data-store id-key)
         (do
           (swap! data-store 
@@ -35,7 +35,7 @@
         {:status 400
          :body "User " id "does not exist -- consider POST"})))
   (DELETE "/user/:id"
-  	[id]
+    [id]
     (let [id-key (keyword id)]
       (if (contains? @data-store id-key)
         (do
