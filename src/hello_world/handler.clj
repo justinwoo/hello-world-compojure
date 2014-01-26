@@ -21,7 +21,8 @@
         {:status 400
          :body "User " id "already exists -- consider PUT"}
         (do
-          (swap! data-store 
+          ; (swap! data-store 
+          (send data-store
             assoc (keyword id) id)
           (str "User " id " was added")))))
   (PUT "/user/:id/:newvalue"
@@ -29,7 +30,8 @@
     (let [id-key (keyword id)]
       (if (contains? @data-store id-key)
         (do
-          (swap! data-store 
+          ; (swap! data-store 
+          (send data-store
             assoc (keyword id) newvalue)
           (str "User " id " was updated"))
         {:status 400
@@ -39,7 +41,8 @@
     (let [id-key (keyword id)]
       (if (contains? @data-store id-key)
         (do
-          (swap! data-store 
+          ; (swap! data-store 
+          (send data-store
             dissoc (keyword id))
           (str "User" id " was deleted"))
         (route/not-found
